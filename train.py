@@ -222,7 +222,7 @@ def main():
                     print('now time: {}:{}. Step {} of piece {} of epoch {}, loss {}'.format(
                         datetime.now().hour,
                         datetime.now().minute,
-                        (step + 1) // gradient_accumulation,
+                        step + 1,
                         piece_num,
                         epoch + 1,
                         running_loss * gradient_accumulation / log_step))
