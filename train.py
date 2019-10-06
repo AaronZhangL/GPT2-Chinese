@@ -180,18 +180,14 @@ def main():
 
                 #  prepare data
                 batch = samples[step * batch_size: (step + 1) * batch_size]
-                batch_labels = []
                 batch_inputs = []
                 for ids in batch:
-                    int_ids_for_labels = [int(x) for x in ids]
-                    int_ids_for_inputs = [int(x) for x in ids]
-                    batch_labels.append(int_ids_for_labels)
-                    batch_inputs.append(int_ids_for_inputs)
-                batch_labels = torch.tensor(batch_labels).long().to(device)
+                    int_ids = [int(x) for x in ids]
+                    batch_inputs.append(int_ids)
                 batch_inputs = torch.tensor(batch_inputs).long().to(device)
 
                 #  forward pass
-                outputs = model.forward(input_ids=batch_inputs, labels=batch_labels)
+                outputs = model.forward(input_ids=batch_inputs, labels=batch_inputs)
                 loss, logits = outputs[:2]
 
                 #  get loss
