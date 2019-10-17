@@ -28,3 +28,13 @@ $ gpustat -cp
 -rw-r--r-- 1 root root  16M 10月 16 02:23 train-doupo.json
 -rw-r--r-- 1 root root 747M 10月 16 19:08 train-kehuan-utf8.json
 ```
+
+#### Mac os comman
+top: show running processes, memory usage and similar stats
+iostat: show I/O per terminal, device and SPU summery statistics
+vm_stat: show Mach virtual memory statistics
+df and diskutil list: report on drive space used and free
+fs_usage: show file activity for both disk and network
+nettop: display updated information about the network (a bit like top for net I/O)
+w: display who is logged in, what they are doing and system load
+ifconfig and ipconfig: network interface and IP protocol details
