@@ -30,11 +30,19 @@ $ gpustat -cp
 ```
 
 #### Mac os comman
+
 top: show running processes, memory usage and similar stats
+
 iostat: show I/O per terminal, device and SPU summery statistics
+
 vm_stat: show Mach virtual memory statistics
+
 df and diskutil list: report on drive space used and free
+
 fs_usage: show file activity for both disk and network
+
 nettop: display updated information about the network (a bit like top for net I/O)
+
 w: display who is logged in, what they are doing and system load
+
 ifconfig and ipconfig: network interface and IP protocol details
