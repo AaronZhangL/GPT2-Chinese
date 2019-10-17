@@ -1,3 +1,10 @@
+#### Cloud GPU Instance
+Titan RTX 24G显存 E5-2680 v3 24核48G 1TB SSD + 4TB硬盘 网速D100/U20 (独占7.1元每小时) A
+
+tensorflow 1.14.0
+
+python 3.6
+
 #### Export/Inport python package
 ```
 $ pip freeze > requirements.txt
@@ -46,3 +53,4 @@ nettop: display updated information about the network (a bit like top for net I/
 w: display who is logged in, what they are doing and system load
 
 ifconfig and ipconfig: network interface and IP protocol details
+
