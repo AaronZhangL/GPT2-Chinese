@@ -11,14 +11,14 @@ from torch.nn import DataParallel
 from tqdm import tqdm
 
 import multiprocessing as mp
-from fsplit.filesplit import FileSplit
+#from fsplit.filesplit import FileSplit
 
 '''
 如果训练材料是全部堆在一起不分篇章的话用这个文件
 增加多进程处理，减少单个CPU的负载 -Aaron.Z 2019/10/18
 '''
 
-
+'''
 def azFielFilter(raw_data_path, num_pieces, save_path):
     # # TODO: check num_pieces > 0
 
@@ -39,6 +39,50 @@ def azFielFilter(raw_data_path, num_pieces, save_path):
     fs = FileSplit(file=raw_data_path,
                    splitsize=fileSizeMBytesPerFile, output_dir=save_path)
     fs.split()
+'''
+
+
+def az_build_mutiple_files(raw_data_path, tokenized_data_path, full_tokenizer, num_pieces):
+    # Don't split file
+    num_pieces = 1
+
+    # Init files counter
+    file_count = 0
+
+    # List all of files in directory
+    if os.path.isdir(raw_data_path):
+        for file in os.listdir(raw_data_path):
+            if file.endswith(".txt"):
+                file_path = os.path.join(raw_data_path, file)
+                az_build_single_files(file_path, tokenized_data_path,
+                                      full_tokenizer, num_pieces, file_count)
+                file_count += 1
+                print("file path is : " + file_path)
+
+    print("az_build_mutiple_files:finished")
+    return file_count
+
+def az_build_single_files(raw_data_path, tokenized_data_path, full_tokenizer, num_pieces, file_count):
+    with open(raw_data_path, 'r', encoding='utf8') as f:
+        print('reading lines')
+        # for doupo text doc /Modified by A.Z start
+        # lines = json.load(f)
+        lines = f.read()
+        # for doupo text doc /Modified by A.Z end
+        lines = [line.replace('\n', ' [SEP] ') for line in lines]  # 用[SEP]表示换行, 段落之间使用SEP表示段落结束
+    single = ''.join(lines)
+    len_single = len(single)
+    if not os.path.exists(tokenized_data_path):
+        os.mkdir(tokenized_data_path)
+    for i in tqdm(range(num_pieces)):
+        single_ids = full_tokenizer.convert_tokens_to_ids(
+            full_tokenizer.tokenize(single[len_single // num_pieces * i: len_single // num_pieces * (i + 1)]))
+        with open(tokenized_data_path + 'tokenized_train_{}.txt'.format(file_count), 'w') as f:
+            for id in single_ids[:-1]:
+                f.write(str(id) + ' ')
+            f.write(str(single_ids[-1]))
+            f.write('\n')
+    print('az_build_single_files:finish')
 
 
 def build_files(raw_data_path, tokenized_data_path, full_tokenizer, num_pieces):
@@ -143,15 +187,20 @@ def main():
     output_dir = args.output_dir
 
     # Aaron test start
-    azFielFilter(raw_data_path, num_pieces, "./data/")
-    '''
+    # azFielFilter(raw_data_path, num_pieces, "./data/")
+
+
     # Aaron test end
     if raw:
         print('building files')
-        build_files(raw_data_path=raw_data_path, tokenized_data_path=tokenized_data_path, full_tokenizer=full_tokenizer,
-                    num_pieces=num_pieces)
+        #build_files(raw_data_path=raw_data_path, tokenized_data_path=tokenized_data_path, full_tokenizer=full_tokenizer,
+        #            num_pieces=num_pieces)
+        file_count = az_build_mutiple_files(raw_data_path=raw_data_path,
+                                tokenized_data_path=tokenized_data_path,
+                                full_tokenizer=full_tokenizer, num_pieces=num_pieces)
+        num_pieces = num_pieces
         print('files built')
-
+    '''
     if not args.pretrained_model:
         model = pytorch_transformers.modeling_gpt2.GPT2LMHeadModel(
             config=model_config)

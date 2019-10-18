@@ -1,0 +1,12 @@
+python  train_single-multiProcessing.py \
+  --model_config config/model_config_kehuan.json \
+  --tokenized_data_path data/tokenized/ \
+  --tokenizer_path cache/vocab_kehuan-from.txt \
+  --raw_data_path data/ \
+  --epochs 30 \
+  --log_step 200 \
+  --stride 512 \
+  --output_dir model/ \
+  --device 0 \
+  --num_pieces 1 \
+  --raw

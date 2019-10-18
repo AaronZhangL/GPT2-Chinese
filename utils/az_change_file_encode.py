@@ -1,4 +1,5 @@
 import os
+import shutil
 from chardet import detect
 import argparse
 import multiprocessing as mp
@@ -12,19 +13,17 @@ def get_encoding_type(file):
     return detect(rawdata)['encoding']
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--srcfile', default='',
-                        type=str, required=True, help='元文件')
-    parser.add_argument('--trgfile', default='',
-                        type=str, required=True, help='目标文件')
+def change_encode(srcfile, trgfile):
+    # TODO: mkdir subfolder
+    # error_dir = "errorFile"
+    # error_dir_path = os.path.join(srcfile, error_dir)
+    # if not os.path.exists(error_dir_path):
+    #    os.mkdir(error_dir_path)
 
-    args = parser.parse_args()
-    print('args:\n' + args.__repr__())
-    srcfile = args.srcfile
-    trgfile = args.trgfile
     from_codec = get_encoding_type(srcfile)
-
+    if from_codec == "GB2312" or from_codec is None:
+        from_codec = "GB18030"  # 包含的字符个数：GB2312 < GBK < GB18030
+    print("from_coder: " + str(from_codec))
     # add try: except block for reliability
     try:
         with open(srcfile, 'r', encoding=from_codec) as f, open(trgfile, 'w', encoding='utf-8') as e:
@@ -33,10 +32,39 @@ def main():
 
         # os.remove(srcfile)  # remove old encoding file
         # os.rename(trgfile, srcfile)  # rename new encoding
-    except UnicodeDecodeError:
-        print('Decode Error')
-    except UnicodeEncodeError:
-        print('Encode Error')
+    except UnicodeDecodeError as e:
+        print('### Decode Error ###')
+        # print(e.object.decode("utf-8"))
+        shutil.copyfile(srcfile, srcfile + ".UnicodeDecodeError")
+
+    except UnicodeEncodeError as e:
+        print('### Encode Error ###')
+        print(e.object.encode("utf-8"))
+
+    print("encode file from[" + srcfile + "] to [" + trgfile + "]")
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--SrcFilePath', default='',
+                        type=str, required=True, help='元文件文件夹')
+    parser.add_argument('--TrgFilePath', default='',
+                        type=str, required=True, help='目标文件文件夹')
+
+    args = parser.parse_args()
+    print('args:\n' + args.__repr__())
+    SrcFilePath = args.SrcFilePath
+    TrgFilePath = args.TrgFilePath
+
+    file_count = 0
+    if os.path.isdir(SrcFilePath):
+        for file in os.listdir(SrcFilePath):
+            if file.endswith(".txt"):
+                srcfile = os.path.join(SrcFilePath, file)
+                trgfile = os.path.join(TrgFilePath, "train-" + str(file_count) + ".txt")
+                change_encode(srcfile, trgfile)
+                file_count += 1
+                print("[srcfile]" + srcfile + " ==> " + "[trgfile]" + trgfile)
 
 
 if __name__ == '__main__':
