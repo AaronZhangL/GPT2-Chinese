@@ -1,6 +1,7 @@
 import pytorch_transformers
 import torch
 import os
+import math
 import json
 import random
 import argparse
@@ -10,10 +11,34 @@ from torch.nn import DataParallel
 from tqdm import tqdm
 
 import multiprocessing as mp
+from fsplit.filesplit import FileSplit
 
 '''
 如果训练材料是全部堆在一起不分篇章的话用这个文件
+增加多进程处理，减少单个CPU的负载 -Aaron.Z 2019/10/18
 '''
+
+
+def azFielFilter(raw_data_path, num_pieces, save_path):
+    # # TODO: check num_pieces > 0
+
+    # Get file bytes size
+    statinfo = os.stat(raw_data_path)
+    fileSizeBytes = statinfo.st_size
+    fileSizeMBytes = fileSizeBytes / 1024 / 1024
+    fileSizeMBytesPerFile = fileSizeBytes / num_pieces + 10
+    fileSizePerFile = fileSizeMBytes / num_pieces
+
+    print("Corpus file size is : " + str(math.ceil(fileSizeBytes)) + " Bytes")
+    print("Corpus file size per piece is : " + str(fileSizePerFile) + " MB")
+    print("Corpus file size num_pieces is : " + str(num_pieces) + " pieces")
+
+    # “file” and “splitsize” are required. “output_dir” is optional and
+    #  defaults to current directory.
+    # “splitsize” should be given in bytes.
+    fs = FileSplit(file=raw_data_path,
+                   splitsize=fileSizeMBytesPerFile, output_dir=save_path)
+    fs.split()
 
 
 def build_files(raw_data_path, tokenized_data_path, full_tokenizer, num_pieces):
@@ -117,6 +142,10 @@ def main():
     num_pieces = args.num_pieces
     output_dir = args.output_dir
 
+    # Aaron test start
+    azFielFilter(raw_data_path, num_pieces, "./data/")
+    '''
+    # Aaron test end
     if raw:
         print('building files')
         build_files(raw_data_path=raw_data_path, tokenized_data_path=tokenized_data_path, full_tokenizer=full_tokenizer,
@@ -254,6 +283,7 @@ def main():
     model_to_save.save_pretrained(output_dir + 'final_model')
     # torch.save(scheduler.state_dict(), output_dir + 'final_model/scheduler.pt')
     # torch.save(optimizer.state_dict(), output_dir + 'final_model/optimizer.pt')
+    '''
 
 
 if __name__ == '__main__':
