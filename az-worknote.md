@@ -1,6 +1,8 @@
 #### Cloud GPU Instance
 Titan RTX 24G显存 E5-2680 v3 24核48G 1TB SSD + 4TB硬盘 网速D100/U20 (独占7.1元每小时) A
 
+GTX 1080 Ti 四卡 E5-2640 v3 32核80G 700GB SSD + 4TB硬盘 网速D100/U20 (独占8元每小时)
+
 tensorflow 1.14.0
 
 python 3.6
