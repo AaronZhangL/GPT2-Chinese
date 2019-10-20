@@ -62,6 +62,7 @@ def az_build_mutiple_files(raw_data_path, tokenized_data_path, full_tokenizer, n
     print("az_build_mutiple_files:finished")
     return file_count
 
+
 def az_build_single_files(raw_data_path, tokenized_data_path, full_tokenizer, num_pieces, file_count):
     with open(raw_data_path, 'r', encoding='utf8') as f:
         print('reading lines')
@@ -72,6 +73,8 @@ def az_build_single_files(raw_data_path, tokenized_data_path, full_tokenizer, nu
         lines = [line.replace('\n', ' [SEP] ') for line in lines]  # 用[SEP]表示换行, 段落之间使用SEP表示段落结束
     single = ''.join(lines)
     len_single = len(single)
+    print("raw_data_path :" + raw_data_path)
+    print("len_single : " + str(len_single))
     if not os.path.exists(tokenized_data_path):
         os.mkdir(tokenized_data_path)
     for i in tqdm(range(num_pieces)):
@@ -100,7 +103,7 @@ def build_files(raw_data_path, tokenized_data_path, full_tokenizer, num_pieces):
         os.mkdir(tokenized_data_path)
     for i in tqdm(range(num_pieces)):
         single_ids = full_tokenizer.convert_tokens_to_ids(
-            full_tokenizer.tokenize(single[len_single // num_pieces * i: len_single // num_pieces * (i + 1)]))
+            full_tokenizer. tokenize(single[len_single // num_pieces * i: len_single // num_pieces * (i + 1)]))
         with open(tokenized_data_path + 'tokenized_train_{}.txt'.format(i), 'w') as f:
             for id in single_ids[:-1]:
                 f.write(str(id) + ' ')
@@ -198,9 +201,9 @@ def main():
         file_count = az_build_mutiple_files(raw_data_path=raw_data_path,
                                 tokenized_data_path=tokenized_data_path,
                                 full_tokenizer=full_tokenizer, num_pieces=num_pieces)
-        num_pieces = num_pieces
+        num_pieces = file_count
         print('files built')
-    '''
+
     if not args.pretrained_model:
         model = pytorch_transformers.modeling_gpt2.GPT2LMHeadModel(
             config=model_config)
@@ -332,7 +335,6 @@ def main():
     model_to_save.save_pretrained(output_dir + 'final_model')
     # torch.save(scheduler.state_dict(), output_dir + 'final_model/scheduler.pt')
     # torch.save(optimizer.state_dict(), output_dir + 'final_model/optimizer.pt')
-    '''
 
 
 if __name__ == '__main__':

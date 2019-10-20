@@ -3,7 +3,7 @@ python  train_single-multiProcessing.py \
   --tokenized_data_path data/tokenized/ \
   --tokenizer_path cache/vocab_kehuan-from.txt \
   --raw_data_path data/ \
-  --epochs 30 \
+  --epochs 5 \
   --log_step 200 \
   --stride 512 \
   --output_dir model/ \

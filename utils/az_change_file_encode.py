@@ -13,7 +13,7 @@ def get_encoding_type(file):
     return detect(rawdata)['encoding']
 
 
-def change_encode(srcfile, trgfile):
+def change_encode(srcfile, trgfile, file_count):
     # TODO: mkdir subfolder
     # error_dir = "errorFile"
     # error_dir_path = os.path.join(srcfile, error_dir)
@@ -21,9 +21,10 @@ def change_encode(srcfile, trgfile):
     #    os.mkdir(error_dir_path)
 
     from_codec = get_encoding_type(srcfile)
-    if from_codec == "GB2312" or from_codec is None:
+    print("from_coder(basic): " + str(from_codec))
+    if from_codec is None or from_codec.upper() == "GB2312" or from_codec.upper() == "GBK":
         from_codec = "GB18030"  # 包含的字符个数：GB2312 < GBK < GB18030
-    print("from_coder: " + str(from_codec))
+    print("from_coder(changed): " + str(from_codec))
     # add try: except block for reliability
     try:
         with open(srcfile, 'r', encoding=from_codec) as f, open(trgfile, 'w', encoding='utf-8') as e:
@@ -32,16 +33,23 @@ def change_encode(srcfile, trgfile):
 
         # os.remove(srcfile)  # remove old encoding file
         # os.rename(trgfile, srcfile)  # rename new encoding
-    except UnicodeDecodeError as e:
-        print('### Decode Error ###')
+
+    except UnicodeDecodeError:
+        print('###------------------ Decode Error ------------------###')
         # print(e.object.decode("utf-8"))
-        shutil.copyfile(srcfile, srcfile + ".UnicodeDecodeError")
+        shutil.copyfile(srcfile, srcfile + ".UnicodeDecodeError." + str(file_count))
 
-    except UnicodeEncodeError as e:
-        print('### Encode Error ###')
-        print(e.object.encode("utf-8"))
+    except UnicodeEncodeError:
+        print('###------------------ Encode Error ------------------###')
+        # print(e.object.encode("utf-8"))
+        shutil.copyfile(srcfile, srcfile + ".UnicodeEncodeError." + str(file_count))
+    else:
+        print('finish (no error)')
 
-    print("encode file from[" + srcfile + "] to [" + trgfile + "]")
+    try:
+        print("encode file from[" + srcfile + "] to [" + trgfile + "]")
+    except Exception:
+        print("### print file name error-2 ###")
 
 
 def main():
@@ -62,12 +70,23 @@ def main():
             if file.endswith(".txt"):
                 srcfile = os.path.join(SrcFilePath, file)
                 trgfile = os.path.join(TrgFilePath, "train-" + str(file_count) + ".txt")
-                change_encode(srcfile, trgfile)
+                logfile = os.path.join(TrgFilePath, "log-train.txt")
+                try:
+                    with open(logfile, 'a', encoding='utf-8') as lf:
+                        lf.write("No=" + str(file_count) + "\n")
+                        lf.write(srcfile + "\n")
+                        lf.write(trgfile + "\n")
+                    print("[srcfile]" + srcfile + " ==> " + "[trgfile]" + trgfile)
+                except Exception:
+                    print("### print file name error-1 ###")
+
+                change_encode(srcfile, trgfile, file_count)
                 file_count += 1
-                print("[srcfile]" + srcfile + " ==> " + "[trgfile]" + trgfile)
+
 
 
 if __name__ == '__main__':
     p = mp.Process(target=main)
     p.start()
     p.join()
+    # main()
