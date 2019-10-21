@@ -88,3 +88,8 @@ zip -r xxxx.zip directory
 解凍
 unzip xxxx.zip
 ```
+
+### Count fils
+```
+$ tree -a ./ | tail -1
+```
