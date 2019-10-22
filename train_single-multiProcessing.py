@@ -198,10 +198,11 @@ def main():
         print('building files')
         #build_files(raw_data_path=raw_data_path, tokenized_data_path=tokenized_data_path, full_tokenizer=full_tokenizer,
         #            num_pieces=num_pieces)
-        file_count = az_build_mutiple_files(raw_data_path=raw_data_path,
-                                tokenized_data_path=tokenized_data_path,
-                                full_tokenizer=full_tokenizer, num_pieces=num_pieces)
-        num_pieces = file_count
+        #file_count = az_build_mutiple_files(raw_data_path=raw_data_path,
+        #                        tokenized_data_path=tokenized_data_path,
+        #                        full_tokenizer=full_tokenizer, num_pieces=num_pieces)
+        #num_pieces = file_count
+        num_pieces = 5481 + 1
         print('files built')
 
     if not args.pretrained_model:
